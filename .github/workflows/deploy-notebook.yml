@@ -56,15 +56,21 @@ jobs:
         DEST_HOST=${{ secrets.DATABRICKS_DEST_HOST }}
         DEST_TOKEN=${{ secrets.DATABRICKS_DEST_TOKEN }}
         DEST_BASE="/smartdata_proyectofinal_movies/proceso"
-        for file in notebooks_to_deploy/*.py; do
-          name=$(basename "$file" .py)
-          dest_path="$DEST_BASE/$name"
-          echo "Creando carpeta $DEST_BASE si no existe..."
+
+        while IFS= read -r file; do
+          # Ruta relativa dentro de notebooks_to_deploy (ej: extract/01-ingesta_archivo_movie.py)
+          rel_path="${file#notebooks_to_deploy/}"
+          rel_path_no_ext="${rel_path%.py}"
+          dest_path="$DEST_BASE/$rel_path_no_ext"
+          dest_folder=$(dirname "$dest_path")
+
+          echo "Creando carpeta $dest_folder si no existe..."
           curl -s -X POST \
             -H "Authorization: Bearer $DEST_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"path\":\"$DEST_BASE\"}" \
+            -d "{\"path\":\"$dest_folder\"}" \
             "$DEST_HOST/api/2.0/workspace/mkdirs"
+
           echo "Importando $file → $dest_path"
           response=$(curl -s -X POST \
             -H "Authorization: Bearer $DEST_TOKEN" \
@@ -76,7 +82,7 @@ jobs:
             -F "content=@$file" \
             "$DEST_HOST/api/2.0/workspace/import")
           echo "Response: $response"
-        done
+        done < <(find notebooks_to_deploy -type f -name "*.py")
     
     - name: Check if workflow exists and delete if necessary
       run: |
