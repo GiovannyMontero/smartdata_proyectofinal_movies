@@ -17,31 +17,32 @@ jobs:
       run: |
         ORIGIN_HOST=${{ secrets.DATABRICKS_ORIGIN_HOST }}
         ORIGIN_TOKEN=${{ secrets.DATABRICKS_ORIGIN_TOKEN }}
-        NOTEBOOK_BASE="/Workspace/Users/david.montero@edenred.com/smartdata_proyectofinal_movies/proceso"
+        ORIGIN_ROOT="/Workspace/Users/david.montero@edenred.com/smartdata_proyectofinal_movies"
         NOTEBOOKS=(
-          "prepamb/00-ambientacion"
-          "extract/01-ingesta_archivo_movie"
-          "extract/02-ingesta_archivo_language"
-          "extract/03-ingesta_archivo_genre"
-          "extract/04-ingesta_archivo_movie_genre"
-          "extract/05-ingesta_archivo_movie_languages"
-          "transform/06-transformacion_archivo_movie"
-          "transform/07-transformacion_archivo_language"
-          "transform/08-transformacion_archivo_genre"
-          "transform/09-transformacion_archivo_movie_genre"
-          "transform/10-ingesta_archivo_movie_languages"
-          "load/11-results_movie_genre_language"
-          "grants/12-grants-medallion"
+          "proceso/prepamb/00-ambientacion"
+          "proceso/extract/01-ingesta_archivo_movie"
+          "proceso/extract/02-ingesta_archivo_language"
+          "proceso/extract/03-ingesta_archivo_genre"
+          "proceso/extract/04-ingesta_archivo_movie_genre"
+          "proceso/extract/05-ingesta_archivo_movie_languages"
+          "proceso/transform/06-transformacion_archivo_movie"
+          "proceso/transform/07-transformacion_archivo_language"
+          "proceso/transform/08-transformacion_archivo_genre"
+          "proceso/transform/09-transformacion_archivo_movie_genre"
+          "proceso/transform/10-ingesta_archivo_movie_languages"
+          "proceso/load/11-results_movie_genre_language"
+          "proceso/grants/12-grants-medallion"
+          "utilerias/configurationes"
+          "utilerias/funciones_comunes"
         )
         mkdir -p notebooks_to_deploy
         for nb in "${NOTEBOOKS[@]}"; do
-          # Crea la subcarpeta necesaria (extract, transform, load, etc.)
           mkdir -p "notebooks_to_deploy/$(dirname "$nb")"
 
           echo "Exportando $nb en modo raw..."
           http_code=$(curl -s -w "%{http_code}" -X GET \
             -H "Authorization: Bearer $ORIGIN_TOKEN" \
-            "$ORIGIN_HOST/api/2.0/workspace/export?path=$NOTEBOOK_BASE/$nb&format=JUPYTER&direct_download=true" \
+            "$ORIGIN_HOST/api/2.0/workspace/export?path=$ORIGIN_ROOT/$nb&format=JUPYTER&direct_download=true" \
             --output "notebooks_to_deploy/$nb.py")
 
           if [ "$http_code" != "200" ]; then
@@ -55,13 +56,12 @@ jobs:
       run: |
         DEST_HOST=${{ secrets.DATABRICKS_DEST_HOST }}
         DEST_TOKEN=${{ secrets.DATABRICKS_DEST_TOKEN }}
-        DEST_BASE="/smartdata_proyectofinal_movies/proceso"
+        DEST_ROOT="/smartdata_proyectofinal_movies"
 
         while IFS= read -r file; do
-          # Ruta relativa dentro de notebooks_to_deploy (ej: extract/01-ingesta_archivo_movie.py)
           rel_path="${file#notebooks_to_deploy/}"
           rel_path_no_ext="${rel_path%.py}"
-          dest_path="$DEST_BASE/$rel_path_no_ext"
+          dest_path="$DEST_ROOT/$rel_path_no_ext"
           dest_folder=$(dirname "$dest_path")
 
           echo "Creando carpeta $dest_folder si no existe..."
