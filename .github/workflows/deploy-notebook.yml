@@ -35,11 +35,20 @@ jobs:
         )
         mkdir -p notebooks_to_deploy
         for nb in "${NOTEBOOKS[@]}"; do
+          # Crea la subcarpeta necesaria (extract, transform, load, etc.)
+          mkdir -p "notebooks_to_deploy/$(dirname "$nb")"
+
           echo "Exportando $nb en modo raw..."
-          curl -s -X GET \
+          http_code=$(curl -s -w "%{http_code}" -X GET \
             -H "Authorization: Bearer $ORIGIN_TOKEN" \
             "$ORIGIN_HOST/api/2.0/workspace/export?path=$NOTEBOOK_BASE/$nb&format=JUPYTER&direct_download=true" \
-            --output "notebooks_to_deploy/$nb.py"
+            --output "notebooks_to_deploy/$nb.py")
+
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Error exportando $nb (HTTP $http_code)"
+            cat "notebooks_to_deploy/$nb.py"
+            exit 1
+          fi
         done
     
     - name: Deploy notebooks to Destination Workspace
@@ -386,7 +395,7 @@ jobs:
                 ],
                 "run_if": "ALL_SUCCESS",
                 "notebook_task": {
-                    "notebook_path": "/smartdata_proyectofinal_movies/proceso/load/11.results_movie_genre_language",
+                    "notebook_path": "/smartdata_proyectofinal_movies/proceso/load/11-results_movie_genre_language",
                     "base_parameters": {
                         "param_file_date": "2024-12-16"
                     },
