@@ -189,7 +189,22 @@ El dashboard incluye filtros globales por **Género** e **Idioma**, junto con la
 
 ### **Giovanny Montero**
 *Data Engineer · NET Senior Developer*
+<p align="center">
+  <a href="https://credentials.databricks.com/3109013a-a094-491a-b3a0-e2ea9cf925c7#acc.3xNgYeyf">
+    <img src="otros/30545a83-a431-48d8-b797-fd0fdfe30a21.png" alt="Databricks Accredited Platform Administrator" width="150">
+  </a>
+  <a href="https://credentials.databricks.com/e1460f4c-64a4-4129-9142-35ed3f750987#acc.JEsGmT8o">
+    <img src="otros/be091d43-aa64-4f21-9fc7-adf01f196c00.png" alt="Databricks Accredited Generative AI Fundamentals" width="150">
+  </a>
+  <a href="https://credentials.databricks.com/dad14599-77d2-41f9-8ad6-71f709beaabe#acc.Rl0D46Be">
+    <img src="otros/c4177188-a423-4f6d-9045-81a2b688f938.png" alt="Databricks Accredited Fundamentals" width="150">
+  </a>
+</p>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=fff)](https://www.linkedin.com/in/giovannymontero)
 
 </div>
+
+ 
+
+
